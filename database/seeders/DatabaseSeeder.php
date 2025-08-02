@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
+use App\Models\ParkingLog;
 use App\Models\User;
 use App\Models\Vehicle;
-use App\Models\ParkingLog;
+use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,15 +15,15 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Buat 5 member & user admin
-        User::factory()->count(5)->create(['role' => 'admin']);
+        // User::factory()->count(5)->create(['role' => 'admin']);
 
         // Buat 15 member user biasa
-        User::factory()->count(15)->create(['role' => 'user']);
+        // User::factory()->count(15)->create(['role' => 'user']);
 
         // Buat 10 kendaraan acak milik member
-        Vehicle::factory()->count(10)->create();
+        Vehicle::factory()->count(500)->create();
 
         // Buat 20 log parkir
-        ParkingLog::factory()->count(20)->create();
+        ParkingLog::factory()->count(250)->create();
     }
 }

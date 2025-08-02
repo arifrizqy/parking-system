@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('member_id')->constrained('members')->cascadeOnDelete();
+            $table->foreignId('member_id')->constrained('members')->cascadeOnDelete()->unique();
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('role', [ 'user', 'admin' ]);
+            $table->enum('role', ['user', 'admin']);
             $table->timestamps();
         });
     }

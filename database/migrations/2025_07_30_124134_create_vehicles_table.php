@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('owner_id');
             $table->string('owner_type');
-            $table->enum('vehicle_type', [ 'motor', 'mobil', 'sepeda' ]);
+            $table->enum('vehicle_type', ['motor', 'mobil']);
             $table->string('number_plat')->unique();
             $table->timestamps();
 
-            $table->index([ 'owner_id', 'owner_type' ]);
+            $table->index(['owner_id', 'owner_type']);
         });
     }
 

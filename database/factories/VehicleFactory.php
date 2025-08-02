@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\Member;
 use App\Models\Guest;
+use App\Models\Member;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Vehicle>
@@ -18,13 +18,24 @@ class VehicleFactory extends Factory
      */
     public function definition(): array
     {
-        $ownerType = fake()->randomElement([ Member::class, Guest::class ]);
-        $owner = $ownerType::factory()->create();
+        $ownerType = fake()->randomElement([Guest::class, Member::class]);
+
+        if ($ownerType === Member::class) {
+            $owner = $ownerType::factory()->create();
+
+            $owner->user()->create([
+                'email' => fake()->unique()->safeEmail(),
+                'password' => 'password',
+                'role' => fake()->randomElement(['user', 'admin']),
+            ]);
+        } else {
+            $owner = $ownerType::factory()->create();
+        }
 
         return [
             'owner_id' => $owner->id,
             'owner_type' => $ownerType,
-            'vehicle_type' => fake()->randomElement([ 'motor', 'mobil', 'sepeda' ]),
+            'vehicle_type' => fake()->randomElement(['motor', 'mobil']),
             'number_plat' => strtoupper(fake()->bothify('B ###? ??')),
         ];
     }
