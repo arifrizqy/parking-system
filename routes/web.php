@@ -15,4 +15,5 @@ Route::delete('/vehicles/{vehicle}', [App\Http\Controllers\VehicleController::cl
 Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'index'])->name('profile');
 Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 
-Route::get('/guest', [App\Http\Controllers\GuestController::class, 'index'])->name('guest');
+Route::get('/guests', [App\Http\Controllers\GuestController::class, 'index'])->name('guests');
+Route::post('/guests', [App\Http\Controllers\GuestController::class, 'store'])->name('guests.store');

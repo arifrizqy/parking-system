@@ -18,8 +18,8 @@
                 </a>
             </li>
 
-            <li class="sidebar-item {{ request()->routeIs('guest') ? 'active' : '' }}">
-                <a class="sidebar-link" href="{{ route('guest') }}">
+            <li class="sidebar-item {{ request()->routeIs('guests') ? 'active' : '' }}">
+                <a class="sidebar-link" href="{{ route('guests') }}">
                     <i class="align-middle" data-feather="log-in"></i> <span class="align-middle">Register
                         Guest</span>
                 </a>
