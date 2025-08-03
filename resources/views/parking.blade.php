@@ -10,18 +10,47 @@
                     <div class="card">
                         <div class="card-header">{{ __('Input Parking Log') }}</div>
 
-                        <div class="card-body">
-                            <form action="#" class=" d-flex flex-column">
+                        <div class="card-body d-flex flex-column">
+                            <div id="reader" style="width: 300px;" class="mx-auto mb-2"></div>
+                            <button
+                                class="btn btn-sm btn-primary mx-auto mb-4 d-flex align-items-center justify-content-center"
+                                onclick="startScan()">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                    stroke-width="1.5" stroke="currentColor" class="me-2" width="16">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 3.75 9.375v-4.5ZM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 0 1-1.125-1.125v-4.5ZM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0 1 13.5 9.375v-4.5Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M6.75 6.75h.75v.75h-.75v-.75ZM6.75 16.5h.75v.75h-.75v-.75ZM16.5 6.75h.75v.75h-.75v-.75ZM13.5 13.5h.75v.75h-.75v-.75ZM13.5 19.5h.75v.75h-.75v-.75ZM19.5 13.5h.75v.75h-.75v-.75ZM19.5 19.5h.75v.75h-.75v-.75ZM16.5 16.5h.75v.75h-.75v-.75Z" />
+                                </svg>
 
-                                <button class="btn btn-primary mt-3 d-flex align-items-center justify-content-center"
+                                Scan QR
+                            </button>
+                            <form action="{{ route('parking-log.store') }}" method="POST">
+                                @csrf
+                                <input name="member_id" id="member-id" class="d-none">
+
+                                <div class="mb-3">
+                                    <label>Nama Member</label>
+                                    <input type="text" class="form-control" id="member-name">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label>Kendaraan</label>
+                                    <select class="form-select" name="vehicle_id" id="vehicle-select" required>
+                                        <option value="">-- Pilih kendaraan --</option>
+                                    </select>
+                                </div>
+
+                                <button
+                                    class="btn btn-sm btn-success ms-auto mt-3 d-flex align-items-center justify-content-center"
                                     type="submit">
+                                    Log Parkir
+
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" width="24" class="me-2">
+                                        stroke-width="1.5" stroke="currentColor" width="24" class="ms-2">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
                                     </svg>
-
-                                    Save
                                 </button>
                             </form>
                         </div>
@@ -63,8 +92,8 @@
                                                         class="{{ $log->leave_at ? 'badge bg-info' : '' }}">{{ $log->leave_at ? $log->leave_at : '' }}
                                                     </span>
                                                 @else
-                                                    <form action="{{ route('parking-log.leave', $log->id) }}" method="POST"
-                                                        onsubmit="return confirm('Yakin kendaraan keluar?')">
+                                                    <form action="{{ route('parking-log.leave', $log->id) }}"
+                                                        method="POST" onsubmit="return confirm('Yakin kendaraan keluar?')">
                                                         @csrf
                                                         @method('PUT')
                                                         <button class="btn btn-sm btn-warning" type="submit">
@@ -103,4 +132,92 @@
             </div>
         </div>
     </div>
+
+    <script src="{{ asset('assets/html5-qrcode/html5-qrcode.min.js') }}"></script>
+
+    <script>
+        let html5QrCode;
+        const qrRegionId = "reader";
+
+        async function startScan() {
+            html5QrCode = new Html5Qrcode(qrRegionId);
+
+            const config = {
+                fps: 10,
+                qrbox: 250
+            };
+
+            try {
+                await html5QrCode.start({
+                        facingMode: "environment"
+                    }, // Kamera belakang
+                    config,
+                    onScanSuccess,
+                    onScanFailure
+                );
+            } catch (err) {
+                console.error("Gagal mengakses kamera:", err);
+            }
+        }
+
+        async function stopScan() {
+            if (html5QrCode && html5QrCode.isScanning) {
+                try {
+                    await html5QrCode.stop();
+                    console.log("Scanner stopped.");
+                    html5QrCode.clear(); // Membersihkan tampilan
+                } catch (err) {
+                    console.warn("Gagal menghentikan scanner:", err);
+                }
+            } else {
+                console.log("Scanner belum berjalan atau sudah berhenti.");
+            }
+        }
+
+        function onScanSuccess(decodedText, decodedResult) {
+            console.log("QR terdeteksi:", decodedText);
+
+            // Hentikan scanner setelah berhasil scan
+            stopScan();
+
+            if (decodedText.startsWith("MEMBER_ID:")) {
+                const memberId = decodedText.split("MEMBER_ID:")[1];
+                console.log("Member ID:", memberId);
+
+                // Fetch ke endpoint Laravel
+                fetch(`/api/member-data/${memberId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            alert(data.error);
+                            return;
+                        }
+                        console.log(data);
+
+                        // Isi form
+                        document.querySelector('#member-id').value = data.member.id;
+                        document.querySelector('#member-name').value = data.member.name;
+
+                        const select = document.querySelector('#vehicle-select');
+                        select.innerHTML = ''; // Kosongkan dulu
+
+                        data.vehicles.forEach(vehicle => {
+                            const option = document.createElement('option');
+                            option.value = vehicle.id;
+                            option.textContent = `${vehicle.vehicle_type} - ${vehicle.number_plat}`;
+                            select.appendChild(option);
+                        });
+
+                    })
+                    .catch(err => {
+                        console.error('Gagal ambil data member:', err);
+                    });
+            }
+        }
+
+        function onScanFailure(error) {
+            // Bisa dibiarkan kosong atau tampilkan pesan di console
+            console.log("Scan gagal:", error);
+        }
+    </script>
 @endsection

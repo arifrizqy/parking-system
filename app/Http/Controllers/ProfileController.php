@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ProfileController extends Controller
 {
@@ -44,5 +45,28 @@ class ProfileController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Data berhasil diperbarui.');
+    }
+
+    public function generateQrMember()
+    {
+        $member = Auth::user()->member;
+        $filePath = "qr/member-{$member->id}.png";
+        $fullPath = storage_path('app/public/'.$filePath);
+
+        // Buat folder jika belum ada
+        if (! file_exists(dirname($fullPath))) {
+            mkdir(dirname($fullPath), 0755, true);
+        }
+
+        // Generate QR jika belum ada
+        if (! file_exists($fullPath)) {
+            $qrImage = QrCode::format('png')
+                ->size(300)
+                ->generate("MEMBER_ID:{$member->id}");
+
+            file_put_contents($fullPath, $qrImage);
+        }
+
+        return response()->download($fullPath);
     }
 }
