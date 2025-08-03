@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ParkingLog;
+use Illuminate\Support\Facades\Auth;
 
 class ParkingLogController extends Controller
 {
@@ -26,5 +27,26 @@ class ParkingLogController extends Controller
         $logs = ParkingLog::with(['vehicle.owner', 'admin'])->latest()->get();
 
         return view('parking', compact('logs'));
+    }
+
+    public function leave(ParkingLog $parkingLog)
+    {
+        if (! is_null($parkingLog->leave_at)) {
+            return redirect()->back()->with('error', 'Kendaraan sudah keluar.');
+        }
+
+        $parkingLog->update([
+            'leave_at' => now(),
+            'admin_user_id' => Auth::id(),
+        ]);
+
+        return redirect()->back()->with('success', 'Waktu keluar berhasil dicatat.');
+    }
+
+    public function destroy(ParkingLog $parkingLog)
+    {
+        $parkingLog->delete();
+
+        return redirect()->back()->with('success', 'Log parkir berhasil dihapus.');
     }
 }

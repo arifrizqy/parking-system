@@ -7,6 +7,8 @@ Auth::routes();
 Route::redirect('/', '/parking-log');
 
 Route::get('/parking-log', [App\Http\Controllers\ParkingLogController::class, 'index'])->name('parking-log');
+Route::put('/parking-log/{parkingLog}/leave', [App\Http\Controllers\ParkingLogController::class, 'leave'])->name('parking-log.leave');
+Route::delete('/parking-log/{parkingLog}', [App\Http\Controllers\ParkingLogController::class, 'destroy'])->name('parking-log.destroy');
 
 Route::post('/vehicles', [App\Http\Controllers\VehicleController::class, 'store'])->name('vehicles.store');
 Route::put('/vehicles/{vehicle}', [App\Http\Controllers\VehicleController::class, 'update'])->name('vehicles.update');
