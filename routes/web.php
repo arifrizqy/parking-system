@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
-Route::redirect('/', '/parking-log');
+Route::redirect('/', '/profile');
 
 Route::get('/parking-log', [App\Http\Controllers\ParkingLogController::class, 'index'])->name('parking-log');
 Route::post('/parking-log', [App\Http\Controllers\ParkingLogController::class, 'store'])->name('parking-log.store');

@@ -14,16 +14,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Buat 5 member & user admin
-        // User::factory()->count(5)->create(['role' => 'admin']);
+        // Buat 50 kendaraan acak dengan owner, jika owner adalah member otomatis dibuatkan akun user
+        Vehicle::factory()->count(50)->create();
 
-        // Buat 15 member user biasa
-        // User::factory()->count(15)->create(['role' => 'user']);
-
-        // Buat 10 kendaraan acak milik member
-        Vehicle::factory()->count(500)->create();
-
-        // Buat 20 log parkir
-        ParkingLog::factory()->count(250)->create();
+        // Buat 100 log parkir
+        ParkingLog::factory()->count(100)->create();
     }
 }

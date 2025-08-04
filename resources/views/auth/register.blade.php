@@ -12,7 +12,25 @@
                             @csrf
 
                             <div class="row mb-3">
-                                <label for="name" class="col-md-4 col-form-label text-md-end">{{ __('Name') }}</label>
+                                <label for="nID"
+                                    class="col-md-4 col-form-label text-md-end">{{ __('Number ID (NIP/NISN)') }}</label>
+
+                                <div class="col-md-6">
+                                    <input id="nID" type="text"
+                                        class="form-control @error('nID') is-invalid @enderror" name="nID"
+                                        value="{{ old('nID') }}" required autocomplete="nID" autofocus>
+
+                                    @error('nID')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="name"
+                                    class="col-md-4 col-form-label text-md-end">{{ __('Name') }}</label>
 
                                 <div class="col-md-6">
                                     <input id="name" type="text"
@@ -24,6 +42,37 @@
                                             <strong>{{ $message }}</strong>
                                         </span>
                                     @enderror
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label for="type"
+                                    class="col-md-4 col-form-label text-md-end">{{ __('Type') }}</label>
+
+                                <div class="col-md-6 d-flex align-items-center">
+                                    <div class="d-flex gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="type" id="siswa"
+                                                value="siswa">
+                                            <label class="form-check-label" for="siswa">
+                                                Siswa
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="type" id="pegawai"
+                                                value="pegawai">
+                                            <label class="form-check-label" for="pegawai">
+                                                Pegawai
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    @error('type')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
+
                                 </div>
                             </div>
 

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('nip')->nullable()->unique();
             $table->string('nisn')->nullable()->unique();
             $table->string('name');
-            $table->enum('type', [ 'siswa', 'pegawai' ]);
+            $table->enum('type', ['siswa', 'pegawai']);
             $table->timestamps();
         });
     }
