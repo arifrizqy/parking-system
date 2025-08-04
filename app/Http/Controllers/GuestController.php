@@ -6,6 +6,7 @@ use App\Models\Guest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class GuestController extends Controller
 {
@@ -39,7 +40,7 @@ class GuestController extends Controller
             'number_plat' => 'required|unique:vehicles,number_plat',
         ]);
 
-        DB::transaction(function () use ($data) {
+        $log = DB::transaction(function () use ($data) {
             $guest = Guest::create([
                 'name' => $data['name'],
                 'no_telp' => $data['no_telp'],
@@ -51,12 +52,17 @@ class GuestController extends Controller
                 'number_plat' => strtoupper($data['number_plat']),
             ]);
 
-            $vehicle->logs()->create([
+            return $vehicle->logs()->create([
                 'in_time' => now(),
-                'admin_user_id' => Auth::id(), // ✅ tambahkan ini
+                'admin_user_id' => Auth::id(),
             ]);
         });
 
-        return redirect()->back()->with('success', 'Guest and vehicle logged successfully.');
+        $qrCode = QrCode::size(200)->generate("LOG_ID:{$log->id}");
+
+        return view('qr-guest', [
+            'log' => $log,
+            'qrCode' => $qrCode,
+        ]);
     }
 }

@@ -23,3 +23,4 @@ Route::get('/guests', [App\Http\Controllers\GuestController::class, 'index'])->n
 Route::post('/guests', [App\Http\Controllers\GuestController::class, 'store'])->name('guests.store');
 
 Route::get('/api/member-data/{id}', [App\Http\Controllers\Api\MemberDataController::class, 'show']);
+Route::get('/api/guest-data/{id}', [App\Http\Controllers\Api\GuestLogDataController::class, 'show']);
