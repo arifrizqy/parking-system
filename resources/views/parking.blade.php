@@ -55,6 +55,54 @@
                             </form>
                         </div>
                     </div>
+
+                    <div class="card">
+                        <div class="card-header">{{ __('Showing QR Parking Log') }}</div>
+
+                        <div class="card-body">
+                            @php
+                                use Carbon\Carbon;
+
+                                $qrCode = session('qr_code');
+                                $createdAt = session('qr_created_at');
+                                $showQr = false;
+
+                                if ($qrCode && $createdAt) {
+                                    $elapsed = Carbon::parse($createdAt)->diffInSeconds(Carbon::now());
+                                    if ($elapsed <= 60) {
+                                        $showQr = true;
+                                    }
+                                }
+                            @endphp
+
+                            @if ($showQr)
+                                <div id="qr-container" class="d-flex flex-column align-items-center">
+                                    <h4 class="text-center">QR Code Log Terbaru:</h4>
+                                    {!! $qrCode !!}
+                                    <p class="text-muted mb-0">
+                                        QR code ini akan hilang dalam <span id="countdown">{{ 60 - $elapsed }}</span>
+                                        detik.
+                                    </p>
+                                </div>
+
+                                <script>
+                                    let countdown = {{ 60 - $elapsed }};
+                                    const countdownElement = document.getElementById('countdown');
+                                    const qrContainer = document.getElementById('qr-container');
+
+                                    const timer = setInterval(() => {
+                                        countdown--;
+                                        countdownElement.textContent = Math.floor(countdown);
+
+                                        if (countdown <= 0) {
+                                            clearInterval(timer);
+                                            qrContainer.remove();
+                                        }
+                                    }, 1000);
+                                </script>
+                            @endif
+                        </div>
+                    </div>
                 </div>
 
                 <div class="col-8">
@@ -144,7 +192,10 @@
 
             const config = {
                 fps: 10,
-                qrbox: 250
+                qrbox: {
+                    width: 200,
+                    height: 200,
+                },
             };
 
             try {
@@ -238,17 +289,17 @@
                                     ${data.parking.leave_at
                                     ? `<span class="badge bg-info">${data.parking.leave_at}</span>`
                                     : `<form action="/parking-log/${logId}/leave" method="POST"
-                                            onsubmit="return confirm('Yakin kendaraan keluar?')">
-                                            @csrf
-                                            @method('PUT')
-                                            <button class="btn btn-sm btn-warning" type="submit">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                                    stroke="currentColor" width="16">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
-                                                </svg>
-                                            </button>
-                                        </form>`
+                                                                                                                                    onsubmit="return confirm('Yakin kendaraan keluar?')">
+                                                                                                                                    @csrf
+                                                                                                                                    @method('PUT')
+                                                                                                                                    <button class="btn btn-sm btn-warning" type="submit">
+                                                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                                                                                                                            stroke="currentColor" width="16">
+                                                                                                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                                                                                                d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+                                                                                                                                        </svg>
+                                                                                                                                    </button>
+                                                                                                                                </form>`
                                     }
                                 </td>
                                 <td>

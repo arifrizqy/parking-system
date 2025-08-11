@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\ParkingLog;
 use App\Models\Vehicle;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ParkingLogController extends Controller
 {
@@ -40,7 +42,7 @@ class ParkingLogController extends Controller
 
         $vehicle = Vehicle::findOrFail($validated['vehicle_id']);
 
-        ParkingLog::create([
+        $log = ParkingLog::create([
             'vehicle_id' => $vehicle->id,
             'admin_user_id' => Auth::id(),
             'owner_type' => get_class($vehicle->owner),
@@ -48,7 +50,11 @@ class ParkingLogController extends Controller
             'enter_at' => now(),
         ]);
 
-        return back()->with('success', 'Log parkir berhasil ditambahkan.');
+        $qrCode = QrCode::size(200)->generate("LOG_ID:{$log->id}");
+
+        return redirect()->route('parking-log')
+            ->with('qr_code', $qrCode)
+            ->with('qr_created_at', Carbon::now());
     }
 
     public function leave(ParkingLog $parkingLog)
